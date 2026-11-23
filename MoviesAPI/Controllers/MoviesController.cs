@@ -25,13 +25,12 @@ namespace MoviesAPI.Controllers
         {
             var sql =
             @"
-                SELECT m.*, g.*, a.*, r.*, u.*
+                SELECT m.*, g.*, a.*
                 FROM Movie m
                 INNER JOIN Genre g ON m.GenreId = g.Id
-                INNER JOIN AudienceRating a ON m.AudienceRatingId = a.Id
-                LEFT OUTER JOIN CriticReview r ON m.Id = r.MovieId
-                INNER JOIN UserSnapshot u ON u.UserId = r.CreatedBy
+                INNER JOIN AudienceRating a ON m.AudienceRatingId = a.Id               
             ";
+
 
             var movies = await _db.QueryAsync<Movie, Genre, AudienceRating, Movie>( // <table1, table2, table3, returnType>
                 sql,
@@ -64,9 +63,9 @@ namespace MoviesAPI.Controllers
             // create a null movie object that gets pupulated from query results
             Movie? movie = null;
 
-            await _db.QueryAsync<Movie, Genre, AudienceRating, User, Review, Movie>( // <table1, table2, table3, returnType>
+            await _db.QueryAsync<Movie, Genre, AudienceRating, Review, User, Movie>( // <table1, table2, table3, returnType>
                 sql,
-                (m, g, a, u, r) => {
+                (m, g, a, r, u) => {
                     // populate movie objeect with first row of data
                     if (movie == null)
                     {
